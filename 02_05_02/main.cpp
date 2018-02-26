@@ -15,6 +15,7 @@ namespace GameLib {
 		if (g == NULL) {
 			initialize();
 			draw();
+			return;
 		}
 
 		if (g->is_goal()) {
