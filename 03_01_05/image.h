@@ -13,6 +13,7 @@ private:
 	char* m_data;
 	int m_height;
 	int m_width;
+	unsigned* m_img;
 	bool m_loaded;
 	unsigned extract_data(const char* p) const;
 	bool valid_format() const;

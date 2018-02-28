@@ -16,6 +16,11 @@ image::image(const char* path)
 	}
 	m_height = extract_data(&m_data[12]);
 	m_width = extract_data(&m_data[16]);
+	unsigned dot_size = m_height * m_width;
+	m_img = new unsigned[dot_size];
+	for (unsigned i = 0; i < dot_size; ++i) {
+		m_img[i] = extract_data(&m_data[128 + i * 4]);
+	}
 	m_loaded = true;
 }
 
@@ -26,6 +31,7 @@ image::image()
 image::~image()
 {
 	delete m_data;
+	delete m_img;
 }
 
 bool image::loaded() const
@@ -45,7 +51,7 @@ int image::width() const
 
 unsigned image::fetch(int y, int x) const
 {
-	return m_data[y * m_width + x];
+	return m_img[y * m_width + x];
 }
 
 unsigned image::extract_data(const char* p) const
