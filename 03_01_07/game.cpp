@@ -43,6 +43,7 @@ namespace caracal {
 	void game::load_assets(const std::string assets_path) {
 		if (m_assets_loaded) return;
 
+		// TODO: Use enum
 		m_img_baggage = load_image(assets_path, "baggage.dds");
 		if (!m_img_baggage->loaded()) return;
 		m_img_baggage_on_the_goal = load_image(assets_path, "baggage_on_the_goal.dds");
@@ -79,7 +80,7 @@ namespace caracal {
 	}
 
 	void game::draw() {
-		int y, x;
+		unsigned y, x;
 		image* img;
 		std::string stage = m_state.get();
 		std::string::iterator it;
@@ -123,24 +124,22 @@ namespace caracal {
 		GameLib::cout << GameLib::endl << "w:up z:down a:left s:right q:end" << GameLib::endl;
 	}
 
-	void game::drawCell(int y, int x, image* img) {
+	void game::drawCell(unsigned y, unsigned x, image* img) {
 		GameLib::Framework fw = GameLib::Framework::instance();
 		unsigned* vram = fw.videoMemory();
 
-		int windowHeight = fw.height();
-		int windowWidth = fw.width();
+		unsigned windowHeight = fw.height();
+		unsigned windowWidth = fw.width();
 
-		int imageHeight = img->height();
-		int imageWidth = img->width();
+		if (img->height() > windowHeight || img->width() > windowWidth ||
+			y * MAX_CELL_SIZE > windowHeight || x * MAX_CELL_SIZE > windowWidth) {
 
-		if (imageHeight > windowHeight || imageWidth > windowWidth) {
-			GameLib::cout << "Could not render image data." << GameLib::endl;
-			exit(EXIT_FAILURE);
+			throw RenderCellException();
 		}
 
-		for (int i = 0; i < 16; ++i) {
-			for (int j = 0; j < 16; ++j) {
-				vram[(y * 16 + i) * windowWidth + (x * 16 + j)] = img->fetch(i, j);
+		for (unsigned i = 0; i < MAX_CELL_SIZE; ++i) {
+			for (unsigned j = 0; j < MAX_CELL_SIZE; ++j) {
+				vram[(y * MAX_CELL_SIZE + i) * windowWidth + (x * MAX_CELL_SIZE + j)] = img->fetch(i, j);
 			}
 		}
 	}
