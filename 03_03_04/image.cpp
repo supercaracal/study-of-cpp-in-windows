@@ -1,7 +1,7 @@
 #include <fstream>
 #include "image.h"
 
-image::image(const char* path)
+image::image(const char* path, unsigned max_size) : m_max_size(max_size)
 {
 	std::ifstream ifs(path, std::ifstream::binary);
 	ifs.seekg(0, ifs.end);
@@ -16,9 +16,9 @@ image::image(const char* path)
 	}
 	m_height = extract_data(data + 12);
 	m_width = extract_data(data + 16);
-	unsigned dot_size = m_height * m_width;
-	m_img = new unsigned[dot_size];
-	for (unsigned i = 0; i < dot_size; ++i) {
+	unsigned real_size = m_height * m_width;
+	m_img = new unsigned[real_size];
+	for (unsigned i = 0; i < real_size; ++i) {
 		m_img[i] = extract_data(data + (128 + i * 4));
 	}
 	delete[] data;
@@ -51,12 +51,19 @@ unsigned image::width() const
 
 unsigned image::fetch(unsigned y, unsigned x) const
 {
-	if (y >= m_height || x >= m_width) {
+	if (y >= m_max_size || x >= m_max_size) {
 		return m_img[0];
 	}
-	else {
+	if (m_height >= m_max_size && m_width >= m_max_size) {
 		return m_img[y * m_width + x];
 	}
+	if (out_of_image(y, x)) {
+		return m_img[0];
+	}
+	y -= (m_max_size - m_height) / 2;
+	x -= (m_max_size - m_width) / 2;
+	unsigned pos = (y * m_width + x >= m_height * m_width) ? 0 : y * m_width + x;
+	return m_img[pos];
 }
 
 unsigned image::extract_data(const char* p) const
@@ -75,4 +82,11 @@ bool image::valid_format(const char* data) const
 	return data[0] == 'D' &&
 		data[1] == 'D' &&
 		data[2] == 'S';
+}
+
+bool image::out_of_image(unsigned y, unsigned x) const
+{
+	bool out_of_y = m_height < m_max_size && (y * 2 < (m_max_size - m_height)) || ((m_max_size - y) * 2 < (m_max_size - m_height));
+	bool out_of_x = m_width < m_max_size && (x * 2 < (m_max_size - m_width)) || ((m_max_size - x) * 2 < (m_max_size - m_width));
+	return out_of_y || out_of_x;
 }

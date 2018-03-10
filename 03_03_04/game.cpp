@@ -64,7 +64,7 @@ namespace caracal {
 	image* game::load_image(const std::string assets_path, const char* file_name) {
 		std::stringstream ss;
 		ss << assets_path << '/' << file_name;
-		return new image(ss.str().data());
+		return new image(ss.str().data(), MAX_CELL_SIZE);
 	}
 
 	bool game::load_failed() const {
@@ -138,7 +138,6 @@ namespace caracal {
 		}
 
 		unsigned dot;
-		unsigned bg_dot;
 		int alpha;
 		for (unsigned i = 0; i < MAX_CELL_SIZE; ++i) {
 			for (unsigned j = 0; j < MAX_CELL_SIZE; ++j) {

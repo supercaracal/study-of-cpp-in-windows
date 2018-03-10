@@ -6,7 +6,6 @@
 namespace caracal {
 	class game {
 	public:
-		const unsigned MAX_CELL_SIZE = 16;
 		struct RenderCellException : std::exception {
 			const char* what() const noexcept {
 				return "Could not render image data.";
@@ -23,6 +22,7 @@ namespace caracal {
 		bool is_goal();
 		void draw();
 	private:
+		const unsigned MAX_CELL_SIZE = 16;
 		bool m_stage_loaded;
 		bool m_assets_loaded;
 		state m_state;
