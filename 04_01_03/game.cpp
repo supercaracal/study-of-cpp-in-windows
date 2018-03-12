@@ -13,16 +13,18 @@ namespace caracal {
 		delete m_img_player;
 		delete m_img_player_on_the_goal;
 		delete m_img_wall;
+		delete m_anime_player;
 	}
 
 	void game::load_stage(std::istream& is) {
 		if (m_stage_loaded || is.fail()) return;
 
 		is.seekg(0, is.end);
-		int length = static_cast<int>(is.tellg());
+		int length = static_cast<int>(is.tellg()) + 1;
 		is.seekg(0, is.beg);
 		char* buffer = new char[length];
 		is.read(buffer, length);
+		buffer[length - 1] = '\0';
 		m_state.set(buffer);
 		m_stage_loaded = true;
 		delete buffer;
@@ -55,6 +57,12 @@ namespace caracal {
 		return new image(ss.str().data(), MAX_CELL_SIZE);
 	}
 
+	void game::initialize_animations() {
+		m_anime_player = new animation(MAX_CELL_SIZE);
+		state::pos pp = m_state.get_player_pos();
+		m_anime_player->set_current(pp.y, pp.x);
+	}
+
 	bool game::load_failed() const {
 		return !m_stage_loaded || !m_assets_loaded;
 	}
@@ -77,7 +85,10 @@ namespace caracal {
 			cmd = COMMAND::NONE;
 		}
 		state::pos delta = convert_cmd_to_delta(cmd);
-		m_state.move(delta);
+		if (m_state.move(delta)) {
+			state::pos pp = m_state.get_player_pos();
+			m_anime_player->add_destination(pp.y, pp.x);
+		}
 		m_last_cmd_up = up;
 		m_last_cmd_down = down;
 		m_last_cmd_right = right;
@@ -112,6 +123,7 @@ namespace caracal {
 	void game::draw() {
 		unsigned y, x;
 		image* img;
+		image* animated_player_img = NULL;
 		std::string stage = m_state.get();
 		std::string::iterator it;
 
@@ -132,7 +144,8 @@ namespace caracal {
 				img = m_img_baggage_on_the_goal;
 				break;
 			case 'P':
-				img = m_img_player_on_the_goal;
+				img = m_img_grass;
+				animated_player_img = m_img_player_on_the_goal;
 				break;
 			case ' ':
 				img = m_img_grass;
@@ -141,7 +154,8 @@ namespace caracal {
 				img = m_img_baggage;
 				break;
 			case 'p':
-				img = m_img_player;
+				img = m_img_grass;
+				animated_player_img = m_img_player;
 				break;
 			default:
 				continue;
@@ -149,6 +163,10 @@ namespace caracal {
 			}
 			drawCell(y, x, img);
 			++x;
+		}
+
+		if (animated_player_img != NULL) {
+			m_anime_player->draw(animated_player_img);
 		}
 	}
 

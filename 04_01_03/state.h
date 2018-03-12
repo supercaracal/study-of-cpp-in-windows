@@ -17,7 +17,8 @@ namespace caracal {
 			const std::tuple<char, int, int> b);
 		void set(char* data);
 		std::string get();
-		void move(pos delta);
+		bool move(pos delta);
+		pos get_player_pos();
 		bool is_goal();
 	private:
 		std::vector<std::tuple<char, int, int>> m_objects;
@@ -26,7 +27,7 @@ namespace caracal {
 		bool on_wall(pos p);
 		bool on_baggage(pos p);
 		bool on_goal(pos p);
-		void move_player(std::tuple<char, int, int>& player,
+		bool move_player(std::tuple<char, int, int>& player,
 			std::tuple<char, int, int>& destination);
 		bool move_baggage(std::tuple<char, int, int>& baggage,
 			std::tuple<char, int, int>& destination);

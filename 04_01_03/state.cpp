@@ -44,13 +44,16 @@ namespace caracal {
 		return ss.str();
 	}
 
-	void state::move(pos delta) {
+	bool state::move(pos delta) {
+		if (delta.y == 0 && delta.x == 0) {
+			return false;
+		}
 		std::tuple<char, int, int>& player = find_player();
 		pos expected_pp = { std::get<1>(player) + delta.y,
 			std::get<2>(player) + delta.x };
 
 		if (on_wall(expected_pp)) {
-			return;
+			return false;
 		}
 
 		if (on_baggage(expected_pp)) {
@@ -59,11 +62,17 @@ namespace caracal {
 				std::get<2>(baggage) + delta.x };
 			std::tuple<char, int, int>& dest_b = find_object(expected_bp);
 			bool moved = move_baggage(baggage, dest_b);
-			if (!moved) return;
+			if (!moved) return false;
 		}
 
 		std::tuple<char, int, int>& dest_p = find_object(expected_pp);
-		move_player(player, dest_p);
+		return move_player(player, dest_p);
+	}
+
+	state::pos state::get_player_pos() {
+		std::tuple<char, int, int>& pp = find_player();
+		pos p = { std::get<1>(pp), std::get<2>(pp) };
+		return p;
 	}
 
 	bool state::is_goal() {
@@ -130,25 +139,27 @@ namespace caracal {
 		return false;
 	}
 
-	void state::move_player(std::tuple<char, int, int>& player,
+	bool state::move_player(std::tuple<char, int, int>& player,
 		std::tuple<char, int, int>& destination) {
 		char& player_sym = std::get<0>(player);
 		char& dest_sym = std::get<0>(destination);
 		if (dest_sym == '#' || dest_sym == 'O') {
-			return;
+			return false;
 		}
+
 		if (player_sym == 'P') {
 			player_sym = '.';
-		}
-		else {
+		} else {
 			player_sym = ' ';
 		}
+
 		if (dest_sym == '.') {
 			dest_sym = 'P';
-		}
-		else {
+		} else {
 			dest_sym = 'p';
 		}
+
+		return true;
 	}
 
 	bool state::move_baggage(std::tuple<char, int, int>& baggage,

@@ -3,6 +3,7 @@
 #include "GameLib/Framework.h"
 #include "state.h"
 #include "image.h"
+#include "animation.h"
 namespace caracal {
 	class game {
 	public:
@@ -16,6 +17,7 @@ namespace caracal {
 		void load_stage(std::istream& is);
 		void load_assets(const std::string assets_path);
 		bool load_failed() const;
+		void initialize_animations();
 		void update();
 		bool is_goal();
 		void draw();
@@ -43,6 +45,7 @@ namespace caracal {
 		image* m_img_player;
 		image* m_img_player_on_the_goal;
 		image* m_img_wall;
+		animation* m_anime_player;
 		image* load_image(const std::string assets_path, const char* file_name);
 		state::pos convert_cmd_to_delta(COMMAND cmd) const;
 		void drawCell(unsigned y, unsigned x, image* img);

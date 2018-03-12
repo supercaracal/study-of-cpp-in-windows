@@ -50,6 +50,7 @@ static void initialize() {
 	std::ifstream ifs(STAGE_DATA_PATH, std::ifstream::in);
 	g->load_stage(ifs);
 	g->load_assets(ASSETS_DIR);
+	g->initialize_animations();
 }
 
 static void notify(std::string message) {
