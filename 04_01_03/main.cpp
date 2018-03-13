@@ -1,11 +1,10 @@
 #include <fstream>
-#include "game.h"
 #include "GameLib/Framework.h"
+#include "game.h"
 
 static const char* STAGE_DATA_PATH = "C:/Users/DIO/source/repos/study-of-cpp/04_01_03/data/stage.txt";
 static const char* ASSETS_DIR = "C:/Users/DIO/source/repos/study-of-cpp/04_01_03/assets";
 
-static void initialize();
 static void notify(std::string message);
 
 caracal::game* g = 0;
@@ -19,7 +18,8 @@ namespace GameLib {
 		}
 
 		if (g == NULL) {
-			initialize();
+			std::ifstream ifs(STAGE_DATA_PATH, std::ifstream::in);
+			g = new caracal::game(ifs, ASSETS_DIR);
 			if (g->load_failed()) {
 				notify("Could not load stage or assets.");
 				requestEnd();
@@ -43,14 +43,6 @@ namespace GameLib {
 			g_notified_goal = true;
 		}
 	}
-}
-
-static void initialize() {
-	g = new caracal::game();
-	std::ifstream ifs(STAGE_DATA_PATH, std::ifstream::in);
-	g->load_stage(ifs);
-	g->load_assets(ASSETS_DIR);
-	g->initialize_animations();
 }
 
 static void notify(std::string message) {

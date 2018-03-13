@@ -7,6 +7,8 @@ public:
 	bool loaded() const;
 	unsigned height() const;
 	unsigned width() const;
+	unsigned max_height() const;
+	unsigned max_width() const;
 	unsigned fetch(unsigned y, unsigned x) const;
 private:
 	image();

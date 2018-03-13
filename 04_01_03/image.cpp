@@ -49,6 +49,16 @@ unsigned image::width() const
 	return m_width;
 }
 
+unsigned image::max_height() const
+{
+	return m_max_size;
+}
+
+unsigned image::max_width() const
+{
+	return m_max_size;
+}
+
 unsigned image::fetch(unsigned y, unsigned x) const
 {
 	if (y >= m_max_size || x >= m_max_size) {

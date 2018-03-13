@@ -1,35 +1,28 @@
 #pragma once
 #include <vector>
-#include <tuple>
+#include <map>
 #include <algorithm>
-#include <sstream>
-#include <string>
-#include <utility>
+#include "element.h"
+#include "image.h"
 namespace caracal {
 	class state {
 	public:
-		struct pos { int y; int x; };
-		state();
-		state(const state& s);
+		struct pos { unsigned y; unsigned x; };
+		state(char* stage, std::map<char, image*> images_each_sym);
 		virtual ~state();
-		state& operator=(const state& s);
-		bool operator() (const std::tuple<char, int, int> a,
-			const std::tuple<char, int, int> b);
-		void set(char* data);
-		std::string get();
+		bool operator() (const element* a, const element* b);
 		bool move(pos delta);
-		pos get_player_pos();
+		void draw();
 		bool is_goal();
 	private:
-		std::vector<std::tuple<char, int, int>> m_objects;
-		std::tuple<char, int, int>& find_player();
-		std::tuple<char, int, int>& find_object(pos p);
+		std::vector<element*> m_elements;
+		std::map<char, image*> m_images_each_sym;
+		element* find_player();
+		element* find_object(pos p);
 		bool on_wall(pos p);
 		bool on_baggage(pos p);
 		bool on_goal(pos p);
-		bool move_player(std::tuple<char, int, int>& player,
-			std::tuple<char, int, int>& destination);
-		bool move_baggage(std::tuple<char, int, int>& baggage,
-			std::tuple<char, int, int>& destination);
+		bool move_player(element* player, element* destination);
+		bool move_baggage(element* baggage, element* destination);
 	};
 }
