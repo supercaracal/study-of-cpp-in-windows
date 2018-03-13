@@ -10,11 +10,11 @@ namespace caracal {
 		for (p = stage, y = 0, x = 0; *p != '\0'; ++p) {
 			element* e = new element(*p, y, x);
 			if (e->need_foreground()) {
-				e->set_fg_img(m_images_each_sym[*p]);
-				e->set_bg_img(m_images_each_sym[' ']);
+				e->set_fg(m_images_each_sym[*p]);
+				e->set_bg(m_images_each_sym[' ']);
 			} else {
-				e->set_fg_img(NULL);
-				e->set_bg_img(m_images_each_sym[*p]);
+				e->set_fg(NULL);
+				e->set_bg(m_images_each_sym[*p]);
 			}
 			m_elements.push_back(e);
 			++x;
@@ -59,6 +59,15 @@ namespace caracal {
 	}
 
 	bool state::is_goal() {
+		animation* ani;
+		for (int i = 0, q_size = m_animations.size(); i < q_size; ++i) {
+			ani = m_animations.front();
+			m_animations.push(ani);
+			m_animations.pop();
+			if (ani->is_movable_baggage_at_finish()) {
+				return false;
+			}
+		}
 		std::vector<element*>::iterator it;
 		element* elm;
 		for (it = m_elements.begin(); it != m_elements.end(); ++it) {
@@ -173,42 +182,44 @@ namespace caracal {
 	}
 
 	bool state::move_player(element* player, element* destination) {
-		if (destination->cannot_move()) {
+		if (!player->can_move_to(destination)) {
 			return false;
 		}
 
-		animation* ani;
 		if (destination->is_empty_goal()) {
-			ani = new animation(player, destination, 'P', m_images_each_sym['P'], m_images_each_sym[' ']);
+			destination->reserve('P', m_images_each_sym['P'], m_images_each_sym[' ']);
 		} else {
-			ani = new animation(player, destination, 'p', m_images_each_sym['p'], m_images_each_sym[' ']);
+			destination->reserve('p', m_images_each_sym['p'], m_images_each_sym[' ']);
 		}
+		animation* ani = new animation(player, destination);
 		m_animations.push(ani);
 
 		if (player->is_player_on_the_goal()) {
-			player->become('.', m_images_each_sym['.'], m_images_each_sym[' ']);
+			player->reserve('.', m_images_each_sym['.'], m_images_each_sym[' ']);
 		}
 		else {
-			player->become(' ', NULL, m_images_each_sym[' ']);
+			player->reserve(' ', NULL, m_images_each_sym[' ']);
 		}
+		player->become();
 
 		return true;
 	}
 
 	bool state::move_baggage(element* baggage, element* destination) {
-		if (baggage->cannot_move() || destination->cannot_move()) {
+		if (!baggage->can_move_to(destination)) {
 			return false;
 		}
 
-		animation* ani;
-		if (destination->sym() == '.') {
-			ani = new animation(baggage, destination, 'O', m_images_each_sym['O'], m_images_each_sym[' ']);
+		if (destination->is_empty_goal()) {
+			destination->reserve('O', m_images_each_sym['O'], m_images_each_sym[' ']);
 		} else {
-			ani = new animation(baggage, destination, 'o', m_images_each_sym['o'], m_images_each_sym[' ']);
+			destination->reserve('o', m_images_each_sym['o'], m_images_each_sym[' ']);
 		}
+		animation* ani = new animation(baggage, destination);
 		m_animations.push(ani);
 
-		baggage->become(' ', NULL, m_images_each_sym[' ']);
+		baggage->reserve(' ', NULL, m_images_each_sym[' ']);
+		baggage->become();
 
 		return true;
 	}

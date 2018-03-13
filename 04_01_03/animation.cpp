@@ -1,9 +1,9 @@
 #include "animation.h"
 
-animation::animation(element* source, element* destination, char s, image* fg, image* bg)
+animation::animation(element* source, element* destination)
 {
 	m_fw = GameLib::Framework::instance();
-	m_img = source->get_fg_img();
+	m_img = source->get_fg();
 	unsigned h = m_img->max_height();
 	unsigned w = m_img->max_width();
 	m_c_y = source->cell_y() * h;
@@ -11,17 +11,17 @@ animation::animation(element* source, element* destination, char s, image* fg, i
 	m_d_y = destination->cell_y() * h;
 	m_d_x = destination->cell_x() * w;
 	m_dest = destination;
-	m_dest_sym = s;
-	m_dest_fg = fg;
-	m_dest_bg = bg;
 }
 
 animation::~animation()
 {
 	delete m_img;
 	delete m_dest;
-	delete m_dest_fg;
-	delete m_dest_bg;
+}
+
+bool animation::is_movable_baggage_at_finish() const
+{
+	return m_dest->does_try_to_become_movable_baggage();
 }
 
 bool animation::is_finish() const
@@ -31,7 +31,7 @@ bool animation::is_finish() const
 
 void animation::after_finish()
 {
-	m_dest->become(m_dest_sym, m_dest_fg, m_dest_bg);
+	m_dest->become();
 }
 
 void animation::draw() {
