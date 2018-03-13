@@ -21,6 +21,14 @@ public:
 	unsigned cell_x() const;
 	bool cannot_move() const;
 	bool is_linefeed() const;
+	bool is_movable_baggage() const;
+	bool is_player() const;
+	bool is_player_on_the_goal() const;
+	bool is_empty_goal() const;
+	bool is_same_pos(unsigned y, unsigned x) const;
+	bool is_same_wall(unsigned y, unsigned x) const;
+	bool is_same_baggage(unsigned y, unsigned x) const;
+	bool is_same_goal(unsigned y, unsigned x) const;
 	bool need_foreground() const;
 	void become(char s, image* fg_img, image* bg_img);
 	void draw_forground();

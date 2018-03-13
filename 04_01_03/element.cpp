@@ -57,10 +57,51 @@ bool element::is_linefeed() const
 	return m_sym == '\n';
 }
 
+bool element::is_movable_baggage() const
+{
+	return m_sym == 'o';
+}
+
+bool element::is_player() const
+{
+	return m_sym == 'p' || m_sym == 'P';
+}
+
+bool element::is_player_on_the_goal() const
+{
+	return m_sym == 'P';
+}
+
+bool element::is_empty_goal() const
+{
+	return m_sym == '.';
+}
+
+bool element::is_same_pos(unsigned y, unsigned x) const
+{
+	return m_cell_y == y && m_cell_x == x;
+}
+
+bool element::is_same_wall(unsigned y, unsigned x) const
+{
+	return m_sym == '#' && is_same_pos(y, x);
+}
+
+bool element::is_same_baggage(unsigned y, unsigned x) const
+{
+	return (m_sym == 'o' || m_sym == 'O') && is_same_pos(y, x);
+}
+
+bool element::is_same_goal(unsigned y, unsigned x) const
+{
+	return (m_sym == '.' || m_sym == 'O' || m_sym == 'P') && is_same_pos(y, x);
+}
+
 bool element::need_foreground() const
 {
 	return m_sym == 'o' || m_sym == 'O' ||
-		m_sym == 'p' || m_sym == 'P' || m_sym == '.';
+		m_sym == 'p' || m_sym == 'P' ||
+		m_sym == '.';
 }
 
 void element::become(char s, image* fg_img, image* bg_img)

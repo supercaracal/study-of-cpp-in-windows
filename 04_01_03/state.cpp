@@ -18,7 +18,7 @@ namespace caracal {
 			}
 			m_elements.push_back(e);
 			++x;
-			if (*p == '\n') {
+			if (e->is_linefeed()) {
 				++y;
 				x = 0;
 			}
@@ -63,7 +63,7 @@ namespace caracal {
 		element* elm;
 		for (it = m_elements.begin(); it != m_elements.end(); ++it) {
 			elm = static_cast<element*>(*it);
-			if (elm->sym() == 'o') {
+			if (elm->is_movable_baggage()) {
 				return false;
 			}
 		}
@@ -117,7 +117,7 @@ namespace caracal {
 		element* elm = NULL;
 		for (it = m_elements.begin(); it != m_elements.end(); ++it) {
 			elm = static_cast<element *>(*it);
-			if (elm->sym() == 'p' || elm->sym() == 'P') {
+			if (elm->is_player()) {
 				break;
 			}
 		}
@@ -129,7 +129,7 @@ namespace caracal {
 		element* elm = NULL;
 		for (it = m_elements.begin(); it != m_elements.end(); ++it) {
 			elm = static_cast<element *>(*it);
-			if (elm->cell_y() == p.y && elm->cell_x() == p.x) {
+			if (elm->is_same_pos(p.y, p.x)) {
 				break;
 			}
 		}
@@ -141,8 +141,7 @@ namespace caracal {
 		element* elm;
 		for (it = m_elements.begin(); it != m_elements.end(); ++it) {
 			elm = static_cast<element *>(*it);
-			if (elm->sym() == '#' && elm->cell_y() == p.y
-				&& elm->cell_x() == p.x) {
+			if (elm->is_same_wall(p.y, p.x)) {
 				return true;
 			}
 		}
@@ -154,8 +153,7 @@ namespace caracal {
 		element* elm;
 		for (it = m_elements.begin(); it != m_elements.end(); ++it) {
 			elm = static_cast<element*>(*it);
-			if ((elm->sym() == 'o' || elm->sym() == 'O')
-				&& elm->cell_y() == p.y && elm->cell_x() == p.x) {
+			if (elm->is_same_baggage(p.y, p.x)) {
 				return true;
 			}
 		}
@@ -167,8 +165,7 @@ namespace caracal {
 		element* elm;
 		for (it = m_elements.begin(); it != m_elements.end(); ++it) {
 			elm = static_cast<element*>(*it);
-			if ((elm->sym() == '.' || elm->sym() == 'O' || elm->sym() == 'P')
-				&& elm->cell_y() == p.y && elm->cell_x() == p.x) {
+			if (elm->is_same_goal(p.y, p.x)) {
 				return true;
 			}
 		}
@@ -181,14 +178,14 @@ namespace caracal {
 		}
 
 		animation* ani;
-		if (destination->sym() == '.') {
+		if (destination->is_empty_goal()) {
 			ani = new animation(player, destination, 'P', m_images_each_sym['P'], m_images_each_sym[' ']);
 		} else {
 			ani = new animation(player, destination, 'p', m_images_each_sym['p'], m_images_each_sym[' ']);
 		}
 		m_animations.push(ani);
 
-		if (player->sym() == 'P') {
+		if (player->is_player_on_the_goal()) {
 			player->become('.', m_images_each_sym['.'], m_images_each_sym[' ']);
 		}
 		else {
@@ -210,6 +207,8 @@ namespace caracal {
 			ani = new animation(baggage, destination, 'o', m_images_each_sym['o'], m_images_each_sym[' ']);
 		}
 		m_animations.push(ani);
+
+		baggage->become(' ', NULL, m_images_each_sym[' ']);
 
 		return true;
 	}
