@@ -8,6 +8,8 @@ element::element(char s, unsigned y, unsigned x) :
 
 element::~element()
 {
+	delete m_fg_img;
+	delete m_bg_img;
 }
 
 char element::sym() const
@@ -15,12 +17,12 @@ char element::sym() const
 	return m_sym;
 }
 
-const image * element::get_fg_img() const
+image * element::get_fg_img() const
 {
 	return m_fg_img;
 }
 
-const image* element::get_bg_img() const
+image* element::get_bg_img() const
 {
 	return m_bg_img;
 }

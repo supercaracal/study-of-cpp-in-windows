@@ -1,71 +1,77 @@
 #include "animation.h"
 
-animation::animation(unsigned cell_size) : m_cell_size(cell_size)
+animation::animation(element* source, element* destination, char s, image* fg, image* bg)
 {
 	m_fw = GameLib::Framework::instance();
-	m_current = std::pair<unsigned, unsigned>(0, 0);
+	m_img = source->get_fg_img();
+	unsigned h = m_img->max_height();
+	unsigned w = m_img->max_width();
+	m_c_y = source->cell_y() * h;
+	m_c_x = source->cell_x() * w;
+	m_d_y = destination->cell_y() * h;
+	m_d_x = destination->cell_x() * w;
+	m_dest = destination;
+	m_dest_sym = s;
+	m_dest_fg = fg;
+	m_dest_bg = bg;
 }
 
 animation::~animation()
 {
+	delete m_img;
+	delete m_dest;
+	delete m_dest_fg;
+	delete m_dest_bg;
 }
 
-void animation::set_current(unsigned y, unsigned x) {
-	m_current = std::pair<unsigned, unsigned>(y * m_cell_size, x * m_cell_size);
+bool animation::is_finish() const
+{
+	return m_d_y == m_c_y && m_d_x == m_c_x;
 }
 
-void animation::add_destination(unsigned y, unsigned x) {
-	m_dests.push(std::pair<unsigned, unsigned>(y * m_cell_size, x * m_cell_size));
+void animation::after_finish()
+{
+	m_dest->become(m_dest_sym, m_dest_fg, m_dest_bg);
 }
 
-void animation::draw(image* img) {
-	unsigned c_y = std::get<0>(m_current);
-	unsigned c_x = std::get<1>(m_current);
-	unsigned d_y;
-	unsigned d_x;
-
-	if (m_dests.empty()) {
-		d_y = c_y;
-		d_x = c_x;
-	} else {
-		std::pair<unsigned, unsigned>& next = m_dests.front();
-		d_y = std::get<0>(next);
-		d_x = std::get<1>(next);
-		if (d_y == c_y && d_x == c_x) {
-			m_dests.pop();
-			m_current = next;
-		}
+void animation::draw() {
+	if (is_finish()) {
+		return;
 	}
 
 	unsigned windowHeight = m_fw.height();
 	unsigned windowWidth = m_fw.width();
 
-	if (img->height() > windowHeight || img->width() > windowWidth ||
-		c_y > windowHeight || c_x > windowWidth) {
+	if (m_img->height() > windowHeight || m_img->width() > windowWidth ||
+		m_c_y > windowHeight || m_c_x > windowWidth) {
 
+		m_d_y = m_c_y;
+		m_d_x = m_c_x;
 		return;
 	}
 
 	unsigned dot;
 	unsigned alpha;
 	unsigned* vram = m_fw.videoMemory();
+	unsigned max_cell_height = m_img->max_height();
+	unsigned max_cell_width = m_img->max_width();
 
-	for (unsigned i = 0; i < m_cell_size; ++i) {
-		for (unsigned j = 0; j < m_cell_size; ++j) {
-			dot = img->fetch(i, j);
+	for (unsigned i = 0; i < max_cell_height; ++i) {
+		for (unsigned j = 0; j < max_cell_width; ++j) {
+			dot = m_img->fetch(i, j);
 			alpha = (dot & 0xff000000) >> 24;
 			if (alpha < 128) {
 				continue;
 			}
-			vram[(c_y + i) * windowWidth + (c_x + j)] = dot;
+			vram[(m_c_y + i) * windowWidth + (m_c_x + j)] = dot;
 		}
 	}
 
 	unsigned delta_y;
 
-	if (c_y < d_y) {
+	if (m_c_y < m_d_y) {
 		delta_y = 1;
-	} else if (c_y > d_y) {
+	} else if (m_c_y > m_d_y) {
 		delta_y = -1;
 	} else {
 		delta_y = 0;
@@ -73,13 +79,14 @@ void animation::draw(image* img) {
 
 	unsigned delta_x;
 
-	if (c_x < d_x) {
+	if (m_c_x < m_d_x) {
 		delta_x = 1;
-	} else if (c_x > d_x) {
+	} else if (m_c_x > m_d_x) {
 		delta_x = -1;
 	} else {
 		delta_x = 0;
 	}
 
-	m_current = std::pair<unsigned, unsigned>(c_y + delta_y, c_x + delta_x);
+	m_c_y += delta_y;
+	m_c_x += delta_x;
 }

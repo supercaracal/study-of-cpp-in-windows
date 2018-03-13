@@ -2,8 +2,10 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <queue>
 #include "element.h"
 #include "image.h"
+#include "animation.h"
 namespace caracal {
 	class state {
 	public:
@@ -16,6 +18,7 @@ namespace caracal {
 		bool is_goal();
 	private:
 		std::vector<element*> m_elements;
+		std::queue<animation*> m_animations;
 		std::map<char, image*> m_images_each_sym;
 		element* find_player();
 		element* find_object(pos p);

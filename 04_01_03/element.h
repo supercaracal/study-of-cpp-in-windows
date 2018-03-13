@@ -13,8 +13,8 @@ public:
 	element(char s, unsigned u, unsigned x);
 	~element();
 	char sym() const;
-	const image* get_fg_img() const;
-	const image* get_bg_img() const;
+	image* get_fg_img() const;
+	image* get_bg_img() const;
 	void set_fg_img(image* img);
 	void set_bg_img(image* img);
 	unsigned cell_y() const;

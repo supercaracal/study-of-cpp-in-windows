@@ -72,6 +72,7 @@ namespace caracal {
 
 	void state::draw() {
 		std::sort(m_elements.begin(), m_elements.end(), *this);
+
 		unsigned y, x;
 		std::vector<element*>::iterator it;
 		element* elm;
@@ -96,6 +97,18 @@ namespace caracal {
 			}
 			elm->draw_forground();
 			++x;
+		}
+
+		animation* ani;
+		for (int i = 0, q_size = m_animations.size(); i < q_size; ++i) {
+			ani = m_animations.front();
+			if (ani->is_finish()) {
+				ani->after_finish();
+			} else {
+				ani->draw();
+				m_animations.push(ani);
+			}
+			m_animations.pop();
 		}
 	}
 
@@ -166,20 +179,20 @@ namespace caracal {
 		if (destination->cannot_move()) {
 			return false;
 		}
-		char player_sym = player->sym();
-		char dest_sym = destination->sym();
-		if (player_sym == 'P') {
-			player->become('.', NULL, m_images_each_sym['.']);
+
+		animation* ani;
+		if (destination->sym() == '.') {
+			ani = new animation(player, destination, 'P', m_images_each_sym['P'], m_images_each_sym[' ']);
+		} else {
+			ani = new animation(player, destination, 'p', m_images_each_sym['p'], m_images_each_sym[' ']);
+		}
+		m_animations.push(ani);
+
+		if (player->sym() == 'P') {
+			player->become('.', m_images_each_sym['.'], m_images_each_sym[' ']);
 		}
 		else {
 			player->become(' ', NULL, m_images_each_sym[' ']);
-		}
-
-		if (dest_sym == '.') {
-			destination->become('P', m_images_each_sym['P'], m_images_each_sym[' ']);
-		}
-		else {
-			destination->become('p', m_images_each_sym['p'], m_images_each_sym[' ']);
 		}
 
 		return true;
@@ -190,12 +203,13 @@ namespace caracal {
 			return false;
 		}
 
+		animation* ani;
 		if (destination->sym() == '.') {
-			destination->become('O', m_images_each_sym['O'], m_images_each_sym[' ']);
+			ani = new animation(baggage, destination, 'O', m_images_each_sym['O'], m_images_each_sym[' ']);
+		} else {
+			ani = new animation(baggage, destination, 'o', m_images_each_sym['o'], m_images_each_sym[' ']);
 		}
-		else {
-			destination->become('o', m_images_each_sym['o'], m_images_each_sym[' ']);
-		}
+		m_animations.push(ani);
 
 		return true;
 	}
