@@ -1,7 +1,8 @@
 #include <fstream>
 #include "image.h"
 
-image::image(const char* path, unsigned max_size) : m_max_size(max_size)
+image::image(const char* path, unsigned max_size) :
+	m_max_size(max_size)
 {
 	std::ifstream ifs(path, std::ifstream::binary);
 	ifs.seekg(0, ifs.end);
@@ -96,7 +97,13 @@ bool image::valid_format(const char* data) const
 
 bool image::out_of_image(unsigned y, unsigned x) const
 {
-	bool out_of_y = m_height < m_max_size && (y * 2 < (m_max_size - m_height)) || ((m_max_size - y) * 2 < (m_max_size - m_height));
-	bool out_of_x = m_width < m_max_size && (x * 2 < (m_max_size - m_width)) || ((m_max_size - x) * 2 < (m_max_size - m_width));
+	bool out_of_y = m_height < m_max_size &&
+		(y * 2 < (m_max_size - m_height)) ||
+		((m_max_size - y) * 2 < (m_max_size - m_height));
+
+	bool out_of_x = m_width < m_max_size &&
+		(x * 2 < (m_max_size - m_width)) ||
+		((m_max_size - x) * 2 < (m_max_size - m_width));
+
 	return out_of_y || out_of_x;
 }

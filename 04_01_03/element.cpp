@@ -1,6 +1,7 @@
 #include "element.h"
 
-element::element(char s, unsigned y, unsigned x) : m_sym(s), m_cell_y(y), m_cell_x(x)
+element::element(char s, unsigned y, unsigned x) :
+	m_sym(s), m_cell_y(y), m_cell_x(x)
 {
 	m_fw = GameLib::Framework::instance();
 }
@@ -56,7 +57,8 @@ bool element::is_linefeed() const
 
 bool element::need_foreground() const
 {
-	return m_sym == 'o' || m_sym == 'O' || m_sym == 'p' || m_sym == 'P' || m_sym == '.';
+	return m_sym == 'o' || m_sym == 'O' ||
+		m_sym == 'p' || m_sym == 'P' || m_sym == '.';
 }
 
 void element::become(char s, image* fg_img, image* bg_img)
@@ -90,13 +92,16 @@ void element::draw(image* img)
 	unsigned maxHeight = img->max_height();
 	unsigned maxWidth = img->max_width();
 
-	if (img->height() > windowHeight || img->width() > windowWidth ||
-		m_cell_y * maxHeight > windowHeight || m_cell_x * maxWidth > windowWidth) {
+	if (img->height() > windowHeight ||
+		img->width() > windowWidth ||
+		m_cell_y * maxHeight > windowHeight ||
+		m_cell_x * maxWidth > windowWidth) {
 
 		throw RenderCellException();
 	}
 
 	unsigned dot;
+	unsigned idx;
 	int alpha;
 	for (unsigned i = 0; i < maxHeight; ++i) {
 		for (unsigned j = 0; j < maxWidth; ++j) {
@@ -105,7 +110,8 @@ void element::draw(image* img)
 			if (alpha < 128) {
 				continue;
 			}
-			vram[(m_cell_y * maxHeight + i) * windowWidth + (m_cell_x * maxWidth + j)] = dot;
+			idx = (m_cell_y * maxHeight + i) * windowWidth + (m_cell_x * maxWidth + j);
+			vram[idx] = dot;
 		}
 	}
 }

@@ -1,7 +1,9 @@
 #include "state.h"
 
 namespace caracal {
-	state::state(char* stage, std::map<char, image*> images_each_sym) : m_images_each_sym(images_each_sym) {
+	state::state(char* stage, std::map<char, image*> images_each_sym) :
+		m_images_each_sym(images_each_sym)
+	{
 		char* p;
 		int y;
 		int x;

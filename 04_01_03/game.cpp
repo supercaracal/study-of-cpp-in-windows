@@ -1,7 +1,9 @@
 #include "game.h"
 
 namespace caracal {
-	game::game(std::istream& is, const std::string assets_path) : m_loaded(false) {
+	game::game(std::istream& is, const std::string assets_path) :
+		m_loaded(false)
+	{
 		if (is.fail()) return;
 		m_fw = GameLib::Framework::instance();
 		char* stg = load_stage(is);
