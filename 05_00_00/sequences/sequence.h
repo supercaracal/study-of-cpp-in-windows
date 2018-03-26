@@ -1,6 +1,5 @@
 #pragma once
 #include <sstream>
-#include "GameLib/Framework.h"
 #include "../image.h"
 
 namespace caracal {
@@ -18,8 +17,6 @@ namespace caracal {
 		protected:
 			image* load_image(const char* file_name, unsigned height, unsigned width) const;
 			unsigned* build_data(image* img, unsigned height, unsigned width) const;
-		private:
-			GameLib::Framework m_fw;
 		};
 	}
 }

@@ -3,6 +3,7 @@
 #include "sequences/title.h"
 
 caracal::sequences::sequence* g_seq;
+unsigned fr_cnt = 0;
 
 namespace GameLib {
 	void Framework::update() {
@@ -53,5 +54,9 @@ namespace GameLib {
 		}
 
 		setFrameRate(60);
+		if (++fr_cnt % 60 == 0) {
+			fr_cnt = 0;
+			cout << frameRate() << endl;
+		}
 	}
 }

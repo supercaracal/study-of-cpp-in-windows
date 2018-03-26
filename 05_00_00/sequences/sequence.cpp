@@ -2,7 +2,7 @@
 
 namespace caracal {
 	namespace sequences {
-		sequence::sequence() : m_fw(GameLib::Framework::instance()) {
+		sequence::sequence() {
 		}
 
 		bool sequence::should_close() const {
