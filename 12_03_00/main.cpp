@@ -11,11 +11,6 @@ struct pos {
 	double x;
 };
 
-struct ratio {
-	double y;
-	double x;
-};
-
 struct distance {
 	double y;
 	double x;
@@ -64,9 +59,7 @@ namespace GameLib {
 		double cosine = cos(theta);
 		double img_h = static_cast<double>(imageHeight);
 		double img_w = static_cast<double>(imageWidth);
-		distance diff;
 		distance offset = { img_h / 2.0, img_w / 2.0 };
-		pos point;
 		pos left_of_top = { 0.0, 0.0 };
 		pos right_of_top = { 0.0, img_w };
 		pos left_of_bottom = { img_h, 0.0 };
@@ -76,15 +69,16 @@ namespace GameLib {
 		lt = rotate(lt);
 		rt = rotate(rt);
 		lb = rotate(lb);
-		diff.y = lb.point.y - lt.point.y;
-		diff.x = rt.point.x - lt.point.x;
-		ratio rat;
+		distance diff_rt = { rt.point.y - lt.point.y, rt.point.x - lt.point.x };
+		distance diff_lb = { lb.point.y - lt.point.y, lb.point.x - lt.point.x };
+		double ratio_rt, ratio_lb;
+		pos point;
 		for (int y = 0; y < imageHeight; ++y) {
-			rat.y = static_cast<double>(y) / img_h;
-			point.y = lt.point.y + diff.y * rat.y;
+			ratio_lb = static_cast<double>(y) / img_h;
 			for (int x = 0; x < imageWidth; ++x) {
-				rat.x = static_cast<double>(x) / img_w;
-				point.x = lt.point.x + diff.x * rat.x;
+				ratio_rt = static_cast<double>(x) / img_w;
+				point.y = lt.point.y + diff_lb.y * ratio_lb + diff_rt.y * ratio_rt;
+				point.x = lt.point.x + diff_lb.x * ratio_lb + diff_rt.x * ratio_rt;
 				idx = static_cast<int>(point.y) * windowWidth + static_cast<int>(point.x) + offset_idx;
 				if (idx < 0 || idx >= max_length) {
 					continue;
