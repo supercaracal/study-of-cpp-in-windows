@@ -1,9 +1,22 @@
 #include <fstream>
+#include <cstdlib>
 #include "image.h"
 
-image::image(const char* path)
+image::image() : m_data(NULL), m_height(0), m_width(0), m_img(NULL), m_loaded(false)
 {
-	std::ifstream ifs(path, std::ifstream::binary);
+	size_t len;
+	getenv_s(&len, NULL, 0, ENV_REPO_PATH);
+	if (len == 0) {
+		return;
+	}
+
+	char* p = (char*)malloc(sizeof(char) * len);
+	getenv_s(&len, p, len, ENV_REPO_PATH);
+	std::string s = p;
+	free(p);
+	s += IMG_FILE_PATH_POSTFIX;
+
+	std::ifstream ifs(s, std::ifstream::binary);
 	ifs.seekg(0, ifs.end);
 	int size = static_cast<int>(ifs.tellg());
 	ifs.seekg(0, ifs.beg);
@@ -22,10 +35,6 @@ image::image(const char* path)
 		m_img[i] = extract_data(&m_data[128 + i * 4]);
 	}
 	m_loaded = true;
-}
-
-image::image()
-{
 }
 
 image::~image()

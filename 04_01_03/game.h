@@ -14,7 +14,7 @@ namespace caracal {
 		bool is_goal();
 	private:
 		const unsigned MAX_CELL_SIZE = 16;
-		const enum COMMAND {
+		const enum class COMMAND {
 			UP,
 			DOWN,
 			RIGHT,

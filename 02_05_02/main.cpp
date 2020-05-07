@@ -1,6 +1,10 @@
 #include <fstream>
+#include <string>
+#include <cstdlib>
 #include "game.h"
 #include "GameLib/Framework.h"
+
+const char* ENV_REPO_PATH = "MY_GAME_PROGRAMMER_BOOK_REPO";
 
 static void initialize();
 static void draw();
@@ -35,11 +39,21 @@ namespace GameLib {
 }
 
 static void initialize() {
+	size_t len;
+	getenv_s(&len, NULL, 0, ENV_REPO_PATH);
+	if (len == 0) {
+		die("Could not load environment variable.");
+	}
+	char* p = (char*) malloc(sizeof(char) * len);
+	getenv_s(&len, p, len, ENV_REPO_PATH);
+
+	std::string s = p;
+	free(p);
+	s += "/02_05_02/data.txt";
+	std::ifstream ifs(s, std::ifstream::in);
+
 	g = new caracal::game();
-
-	std::ifstream ifs("C:/Users/DIO/source/repos/study-of-cpp/02_05_02/data.txt", std::ifstream::in);
 	g->load_stage(ifs);
-
 	if (g->load_failed()) {
 		die("Could not load stage.");
 	}
@@ -79,6 +93,9 @@ static void draw() {
 			break;
 		case 'p':
 			color = 0x00ff00;
+			break;
+		default:
+			color = 0;
 			break;
 		}
 		drawCell(y, x, color);

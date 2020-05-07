@@ -25,7 +25,7 @@ image::image(const char* path)
 	m_loaded = true;
 }
 
-image::image()
+image::image() : m_height(0), m_width(0), m_img(NULL), m_loaded(false)
 {
 }
 

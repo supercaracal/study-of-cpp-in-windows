@@ -28,7 +28,7 @@ namespace caracal {
 		is.read(buffer, length);
 		m_state.set(buffer);
 		m_loaded = true;
-		delete buffer;
+		delete[] buffer;
 	}
 
 	bool game::load_failed() const {

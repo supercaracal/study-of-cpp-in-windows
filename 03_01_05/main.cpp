@@ -2,8 +2,7 @@
 #include "GameLib/Framework.h"
 #include "image.h"
 
-static const char* IMG_FILE_PATH = "C:/Users/DIO/source/repos/study-of-cpp/03_01_05/phase.dds";
-static const image& g_img = image(IMG_FILE_PATH);
+static const image& g_img = image();
 static bool rendered = false;
 
 namespace GameLib {

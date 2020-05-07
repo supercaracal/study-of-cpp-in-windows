@@ -1,7 +1,17 @@
 #include "game.h"
 
 namespace caracal {
-	game::game() : m_stage_loaded(false), m_assets_loaded(false) {
+	game::game() :
+		m_stage_loaded(false),
+		m_assets_loaded(false),
+		m_img_baggage(NULL),
+		m_img_baggage_on_the_goal(NULL),
+		m_img_goal(NULL),
+		m_img_grass(NULL),
+		m_img_player(NULL),
+		m_img_player_on_the_goal(NULL),
+		m_img_wall(NULL)
+	{
 	}
 
 	game::game(const game& g) {
@@ -37,7 +47,7 @@ namespace caracal {
 		is.read(buffer, length);
 		m_state.set(buffer);
 		m_stage_loaded = true;
-		delete buffer;
+		delete[] buffer;
 	}
 
 	void game::load_assets(const std::string assets_path) {

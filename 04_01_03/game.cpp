@@ -2,7 +2,12 @@
 
 namespace caracal {
 	game::game(std::istream& is, const std::string assets_path) :
-		m_loaded(false)
+		m_loaded(false),
+		m_last_cmd_up(false),
+		m_last_cmd_down(false),
+		m_last_cmd_right(false),
+		m_last_cmd_left(false),
+		m_state(NULL)
 	{
 		if (is.fail()) return;
 		m_fw = GameLib::Framework::instance();
