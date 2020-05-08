@@ -75,7 +75,7 @@ namespace caracal {
 
 		char* game::load_stage(const char* data_dir, const char* file_name) {
 			std::stringstream ss;
-			ss << data_dir << '/' << file_name;
+			ss << repo_path << data_dir << '/' << file_name;
 			std::ifstream ifs(ss.str().data(), std::ifstream::in);
 			if (ifs.fail()) return NULL;
 			ifs.seekg(0, ifs.end);
@@ -101,7 +101,7 @@ namespace caracal {
 
 		image* game::load_image(const char* assets_dir, const char* file_name) {
 			std::stringstream ss;
-			ss << assets_dir << '/' << file_name;
+			ss << repo_path << assets_dir << '/' << file_name;
 			return new image(ss.str().data(), MAX_CELL_SIZE, MAX_CELL_SIZE);
 		}
 

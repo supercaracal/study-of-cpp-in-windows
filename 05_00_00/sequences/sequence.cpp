@@ -2,7 +2,15 @@
 
 namespace caracal {
 	namespace sequences {
-		sequence::sequence() {
+		sequence::sequence() : repo_path(NULL) {
+			size_t len;
+			getenv_s(&len, NULL, 0, ENV_REPO_PATH);
+			if (len == 0) {
+				return;
+			}
+
+			repo_path = (char*) malloc(sizeof(char) * len);
+			getenv_s(&len, repo_path, len, ENV_REPO_PATH);
 		}
 
 		bool sequence::should_close() const {
@@ -11,7 +19,7 @@ namespace caracal {
 
 		image* sequence::load_image(const char* file_name, unsigned height, unsigned width) const {
 			std::stringstream ss;
-			ss << ASSETS_DIR << '/' << file_name;
+			ss << repo_path << ASSETS_DIR << '/' << file_name;
 			return new image(ss.str().data(), height, width);
 		}
 

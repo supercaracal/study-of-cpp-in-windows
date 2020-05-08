@@ -3,6 +3,7 @@
 namespace caracal {
 	element::element(char s, unsigned y, unsigned x) :
 		m_sym(s), m_cell_y(y), m_cell_x(x),
+		m_fg(NULL), m_bg(NULL),
 		m_reserved_sym(s), m_reserved_fg(NULL), m_reserved_bg(NULL)
 	{
 	}
