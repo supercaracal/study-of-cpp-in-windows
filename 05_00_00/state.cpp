@@ -71,7 +71,6 @@ namespace caracal {
 	}
 
 	bool state::is_goal() {
-		animation* ani;
 		if (m_animations.size() > 0) {
 			return false;
 		}

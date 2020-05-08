@@ -2,7 +2,8 @@
 #include "font.h"
 #include "buffer.h"
 
-static const char* FONT_IMG_PATH = "C:/Users/DIO/source/repos/study-of-cpp/06_00_00/my_fonts.dds";
+static const char* ENV_REPO_PATH = "MY_GAME_PROGRAMMER_BOOK_REPO";
+static const char* FONT_IMG_PATH = "/06_00_00/my_fonts.dds";
 
 bool g_loaded = false;
 caracal::font* g_f = 0;
@@ -18,7 +19,17 @@ namespace GameLib {
 		}
 
 		if (!g_loaded) {
-			g_f = new caracal::font(FONT_IMG_PATH);
+			size_t len;
+			getenv_s(&len, NULL, 0, ENV_REPO_PATH);
+			if (len == 0) {
+				return;
+			}
+			char* p = (char*)malloc(sizeof(char) * len);
+			getenv_s(&len, p, len, ENV_REPO_PATH);
+			std::string s = p;
+			free(p);
+			s += FONT_IMG_PATH;
+			g_f = new caracal::font(s.c_str());
 			g_buf = new caracal::buffer(24, 32);
 			g_loaded = true;
 		}

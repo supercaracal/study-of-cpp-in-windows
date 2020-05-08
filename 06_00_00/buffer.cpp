@@ -7,7 +7,7 @@ namespace caracal {
 		m_size(height * width),
 		m_cur_idx(0)
 	{
-		m_data = new char[height * width + 1];
+		m_data = new char[m_size + 1];
 		for (unsigned i = 0; i < m_size; ++i) {
 			m_data[i] = ' ';
 		}
