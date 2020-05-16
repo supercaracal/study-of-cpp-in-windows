@@ -2,8 +2,9 @@
 #include "GameLib/Framework.h"
 #include "image.h"
 
-const char* IMG_PATH = "C:/Users/DIO/source/repos/study-of-cpp/13_00_00/misawa.dds";
-const image& g_img = image(IMG_PATH);
+static const char* ENV_REPO_PATH = "MY_GAME_PROGRAMMER_BOOK_REPO";
+const char* IMG_PATH = "/13_00_00/misawa.dds";
+const image* g_img = NULL;
 GameLib::Texture* g_tt = NULL;
 int g_theta = 0;
 int g_size_per = 0;
@@ -30,8 +31,26 @@ namespace GameLib {
 
 namespace GameLib {
 	void Framework::update() {
-		if (g_img.loaded() && g_tt == NULL) {
-			createTexture(&g_tt, 128, 128, g_img.data(), g_img.width(), g_img.height());
+		if (g_img == NULL) {
+			size_t len;
+			getenv_s(&len, NULL, 0, ENV_REPO_PATH);
+			if (len == 0) {
+				GameLib::cout << "ENV var not found." << GameLib::endl;
+				exit(EXIT_FAILURE);
+			}
+			char* p = (char*)malloc(sizeof(char) * len);
+			getenv_s(&len, p, len, ENV_REPO_PATH);
+			std::string s = p;
+			free(p);
+			s += IMG_PATH;
+			g_img = new image(s.c_str());
+			if (!g_img->loaded()) {
+				GameLib::cout << "Could not load image file." << GameLib::endl;
+				exit(EXIT_FAILURE);
+			}
+		}
+		if (g_img->loaded() && g_tt == NULL) {
+			createTexture(&g_tt, 128, 128, g_img->data(), g_img->width(), g_img->height());
 		}
 
 		if (isEndRequested()) {
@@ -51,8 +70,8 @@ namespace GameLib {
 			if (g_size_per <= 0) g_scale_up = true;
 		}
 
-		double img_w = static_cast<double>(g_img.width());
-		double img_h = static_cast<double>(g_img.height());
+		double img_w = static_cast<double>(g_img->width());
+		double img_h = static_cast<double>(g_img->height());
 		double win_w = width();
 		double win_h = height();
 
