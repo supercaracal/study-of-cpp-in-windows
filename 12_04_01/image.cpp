@@ -21,10 +21,10 @@ image::image(const char* path) {
 		m_img[i] = extract_data(&data[128 + i * 4]);
 	}
 	m_loaded = true;
-	delete data;
+	delete[] data;
 }
 
-image::image() {
+image::image() : m_height(0), m_width(0), m_loaded(false), m_img(NULL) {
 }
 
 image::~image() {

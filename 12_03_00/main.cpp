@@ -2,8 +2,9 @@
 #include "GameLib/Framework.h"
 #include "image.h"
 
-static const char* IMG_FILE_PATH = "C:/Users/DIO/source/repos/study-of-cpp/12_03_00/phase.dds";
-static const image& g_img = image(IMG_FILE_PATH);
+static const char* ENV_REPO_PATH = "MY_GAME_PROGRAMMER_BOOK_REPO";
+static const char* IMG_FILE_PATH = "/12_03_00/phase.dds";
+static const image* g_img = NULL;
 static int g_count = 0;
 
 struct pos {
@@ -35,15 +36,33 @@ namespace GameLib {
 
 namespace GameLib {
 	void Framework::update() {
-		if (!g_img.loaded()) {
+		if (g_img == NULL) {
+			size_t len;
+			getenv_s(&len, NULL, 0, ENV_REPO_PATH);
+			if (len == 0) {
+				GameLib::cout << "ENV var not found." << GameLib::endl;
+				exit(EXIT_FAILURE);
+			}
+			char* p = (char*)malloc(sizeof(char) * len);
+			getenv_s(&len, p, len, ENV_REPO_PATH);
+			std::string s = p;
+			free(p);
+			s += IMG_FILE_PATH;
+			g_img = new image(s.c_str());
+			if (!g_img->loaded()) {
+				GameLib::cout << "Could not load image file." << GameLib::endl;
+				exit(EXIT_FAILURE);
+			}
+		}
+		if (!g_img->loaded()) {
 			GameLib::cout << "Could not load image file." << GameLib::endl;
 			exit(EXIT_FAILURE);
 		}
 		unsigned* vram = videoMemory();
 		int windowHeight = height();
 		int windowWidth = width();
-		int imageHeight = g_img.height();
-		int imageWidth = g_img.width();
+		int imageHeight = g_img->height();
+		int imageWidth = g_img->width();
 		if (imageHeight > windowHeight || imageWidth > windowWidth) {
 			GameLib::cout << "Could not render image data." << GameLib::endl;
 			exit(EXIT_FAILURE);
@@ -83,7 +102,7 @@ namespace GameLib {
 				if (idx < 0 || idx >= max_length) {
 					continue;
 				}
-				vram[idx] = g_img.fetch(y, x);
+				vram[idx] = g_img->fetch(y, x);
 			}
 		}
 		if (++g_count > 360) g_count = 0;
